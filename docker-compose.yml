@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    environment:
+      - APP_NAME=${APP_NAME}
+      - SERVER_PORT=${SERVER_PORT}
+      - SPRING_DATA_MONGODB_URI=${SPRING_DATA_MONGODB_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRATION=${JWT_EXPIRATION}
+    depends_on:
+      - mongodb
+    networks:
+      - user-network
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - user-network
+
+networks:
+  user-network:
+    driver: bridge
+
+volumes:
+  mongodb_data: 

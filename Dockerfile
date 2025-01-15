@@ -1,42 +1,23 @@
-FROM eclipse-temurin:21-jdk-alpine as build
-WORKDIR /workspace/app
-
-# Make sure the mvnw script has executable permissions
-COPY mvnw .
-COPY .mvn .mvn
-RUN chmod +x mvnw
-
-# Copy project files
+# Build stage
+FROM docker.io/maven:3.9-amazoncorretto-21 AS build
+WORKDIR /app
 COPY pom.xml .
-# Download dependencies first (this step will be cached if pom.xml doesn't change)
-RUN ./mvnw dependency:go-offline
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-# Copy source files and .env if it exists
-COPY src src
-COPY .env* ./ 2>/dev/null || echo "No .env file found"
-
-# Build the application
-RUN ./mvnw package -DskipTests
-RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
-
-# Runtime stage
-FROM eclipse-temurin:21-jre-alpine
-
-# Install required packages for Spring Boot with security
-RUN apk add --no-cache tzdata
-
-VOLUME /tmp
-ARG DEPENDENCY=/workspace/app/target/dependency
-
-# Copy the dependency files
-COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
-COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
-COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
-# Copy .env file from build stage if it exists
-COPY --from=build /workspace/app/.env* /app/ 2>/dev/null || echo "No .env file found"
-
-# Set working directory
+# Run stage
+FROM docker.io/amazoncorretto:21-alpine
 WORKDIR /app
 
+# Create a non-root user
+RUN addgroup -S spring && adduser -S spring -G spring
+USER spring:spring
+
+# Copy the built jar from build stage
+COPY --from=build /app/target/*.jar app.jar
+
+# Expose the application port
+EXPOSE ${SERVER_PORT}
+
 # Run the application
-ENTRYPOINT ["java","-cp",".:lib/*","com.streamingbot.userservice.UserServiceApplication"] 
+ENTRYPOINT ["java", "-jar", "app.jar"] 
