@@ -4,3 +4,13 @@ spring:
       uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/userdb}
   webflux:
     base-path: /api
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    enable:
+      all: true
