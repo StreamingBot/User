@@ -2,11 +2,11 @@ name: Checks
 on:
   push:
     branches:
-      - '*'   # excludes main
+      - main
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
-  sonarcloud:
+  build:
     name: Build and analyze
     runs-on: ubuntu-latest
     steps:
@@ -33,7 +33,7 @@ jobs:
       - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=StreamingBot_Discord
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=StreamingBot_User
   snyk:
     name: Snyk Check
     runs-on: ubuntu-latest
