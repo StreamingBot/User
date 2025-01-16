@@ -23,7 +23,6 @@ public class UserService {
     }
 
     public Mono<User> createUser(User user) {
-        user.setId(UUID.randomUUID());
         return userRepository.save(user);
     }
 

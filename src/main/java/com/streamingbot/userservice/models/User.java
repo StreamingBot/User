@@ -8,6 +8,7 @@ import org.springframework.data.annotation.Id;
 
 @Document(collection = "users")
 public class User implements IUser {
+    
     @Id
     private UUID id;
     

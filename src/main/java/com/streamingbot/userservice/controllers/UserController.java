@@ -8,13 +8,20 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import java.util.UUID;
+import jakarta.annotation.PostConstruct;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
+@CrossOrigin(origins = "*")
 public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @PostConstruct
+    public void init() {
+        System.out.println("UserController initialized!");
+    }
 
     @GetMapping
     public Flux<User> getAllUsers() {
