@@ -34,26 +34,26 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=StreamingBot_User
-  snyk:
-    name: Snyk Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-      - name: Setup .NET
-        uses: actions/setup-dotnet@master
-      - name: Restore dependencies
-        run: dotnet restore ./Gateway.sln
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/dotnet@master
-        continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --file=./Gateway.sln --sarif-file-output=snyk.sarif
-      - name: Upload result to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: snyk.sarif
+  # snyk:
+  #   name: Snyk Check
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@master
+  #     - name: Setup .NET
+  #       uses: actions/setup-dotnet@master
+  #     - name: Restore dependencies
+  #       run: dotnet restore ./Gateway.sln
+  #     - name: Run Snyk to check for vulnerabilities
+  #       uses: snyk/actions/dotnet@master
+  #       continue-on-error: true
+  #       env:
+  #         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+  #       with:
+  #         args: --file=./Gateway.sln --sarif-file-output=snyk.sarif
+  #     - name: Upload result to GitHub Code Scanning
+  #       uses: github/codeql-action/upload-sarif@v2
+  #       with:
+  #         sarif_file: snyk.sarif
   trivy:
     permissions:
       contents: read
@@ -74,6 +74,6 @@ jobs:
           severity: 'CRITICAL,HIGH,MEDIUM,LOW'
 
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-results.sarif'
