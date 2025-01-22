@@ -68,7 +68,7 @@ jobs:
           scan-type: 'fs'
           ignore-unfixed: true
           format: 'sarif'
-          output: 'trivy-results.sarif'
+          output: 'snyk-results.sarif'
           severity: 'CRITICAL,HIGH,MEDIUM,LOW'
 
       - name: Upload Snyk scan results to GitHub Security tab
